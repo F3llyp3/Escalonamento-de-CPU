@@ -1,13 +1,9 @@
-#include <iostream>
+#include "fcfs.h"
 
-using namespace std;
-
-typedef struct{ // struct para de processos
-  int t_retorno;
-  int t_resposta;
-  int t_espera;
-} processos;
 
 int main() { 
+
+  fcfs();
+  
   return 0;
 }
