@@ -1,4 +1,5 @@
 #include "fcfs.h"
+
 typedef struct{ // struct para de processos
   int t_retorno;
   int t_resposta;
@@ -37,25 +38,17 @@ void fcfs(void){
       tempo_atual += processos[i].t_pico;
     
     }else{
-      processos[i].t_resposta = tempo_atual;
+      processos[i].t_resposta = tempo_atual - processos[i].t_chegada;
       
-      processos[i].t_espera = processos[i].t_resposta - processos[i].t_chegada;
+      processos[i].t_espera = tempo_atual - processos[i].t_chegada;
+      //processo[i].t_espera = processo[i].t_resposta;
       
-      processos[i].t_retorno = (processos[i].t_resposta + processos[i].t_pico) - processos[i].t_chegada;
+      processos[i].t_retorno = (processos[i].t_resposta + processos[i].t_pico);
       
       tempo_atual += processos[i].t_pico;
     }
-    //cout << "tempo atual: " << tempo_atual << endl;
+    
   }
-  
-  for(int i=0; i<processos.size(); i++){
-      cout << "Processo " << i+1 << endl;
-      cout << processos[i].t_retorno << " ";
-      cout << processos[i].t_resposta << " ";
-      cout << processos[i].t_espera << " ";
-      cout << endl;
-  }
-  
   
   // IMPRIMINDO RESULTADOS
   float espera_med, retorno_med, resposta_med;
@@ -66,17 +59,7 @@ void fcfs(void){
       retorno_med+= processos[i].t_retorno;
       resposta_med+= processos[i].t_resposta;
   }
+   
+  cout << "FCFS " << retorno_med/processos.size() <<" " << resposta_med/processos.size() << " " << espera_med/processos.size() << endl;
   
-  cout << "soma de retorno:" << retorno_med << endl;
-  cout << "soma de resposta:" << resposta_med << endl;
-  cout << "soma de espera:" << espera_med << endl;
-  
-  cout << retorno_med/processos.size() <<" " << resposta_med/processos.size() << " " << espera_med/processos.size() << endl;
-  // retorno -> resposta -> espera
-  // resultado esperado: FCFS 30,5 19,5 19,5 
-  //                          122   78  78
-  //p1 - 0 20
-  //p2 - 0 10
-  //p3 - 4 6
-  //p4 - 4 8
 }
