@@ -88,21 +88,7 @@ void sjf(void){
     processo_atual.t_espera = processo_atual.t_termino - processo_atual.t_chegada - processo_atual.t_pico;
  
   }
-  
-  /*
-  # ISSO AQUI ERA COM PREEMPÇÃO TAVA FAZENDO ERRADO
-  for( ;tempo_atual < tempo_total_exec; tempo_atual++){
-    processo& processo_atual = menorProcesso(processos,tempo_atual);
-    
-    processo_atual.t_restante--;
-  
-    if(processo_atual.t_restante == 0){
-      processo_atual.t_termino = tempo_atual + 1;
-      cout << "Processo terminou em: " << processo_atual.t_termino << endl;
-    }
-  }
-  */
-  
+
   float espera_med, retorno_med, resposta_med;
   espera_med = retorno_med = resposta_med = 0;
 

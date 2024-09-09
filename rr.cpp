@@ -15,7 +15,6 @@ typedef struct{ // struct de processos
 
 
 void rr(void){
-  //cout << "teste";
   vector<processo> processos; // vetor de processos
   processo auxiliar; // auxiliar para processos
 
@@ -33,71 +32,74 @@ void rr(void){
   // IMPLEMENTAÇÃO DO ALGORITMO RR
   
   queue<processo> fila_p;
-  int quantum = 2;
+  //int quantum = 2;
   int tempo_atual = 0;
   int aux=0;
+  vector<processo> finalizados;
   
 
   for(int i=0; i<processos.size(); i++){ // INSERINDO TEMPO QUE RESTA
     processos[i].t_restante = processos[i].t_pico;
-  }
-
+  }  
   
   int indice = 0;
-  processo p;
+  int quantumAux = 0;
+  processo *p = NULL;
   while(aux!=processos.size()){ 
     // verifica o tempo de chegada dos processos
-    while(processos[indice].t_chegada == tempo_atual){
+    while(processos[indice].t_chegada == tempo_atual && indice<processos.size()){
       fila_p.push(processos[indice]);
       indice++;
     }
     //TRATANDO DOS PROCESSOS NA FILA DE PRONTOS
-    
-      //if(fila_p.front().t_restante > 0){
+        tempo_atual++;
         if(!fila_p.empty()){      
-          if(tempo_atual%quantum == 0){
-            p = fila_p.front();
-            fila_p.pop();
-            if(p.t_restante > 0){
-              fila_p.push(p);
-            }else{
-              
+          p = &fila_p.front();
+          if(p->t_pico == p->t_restante){
+            p->t_resposta = tempo_atual - p->t_chegada -1;
             }
+          while(processos[indice].t_chegada == tempo_atual && indice<processos.size()){
+            fila_p.push(processos[indice]);
+            indice++;
+          }
+          p->t_restante--;
+          //cout << "processo de t_pico: " << p->t_pico << " t_restante: " << p->t_restante << endl;
+          quantumAux++;
+          if(quantumAux == 2 || p->t_restante == 0){
+            fila_p.pop();
+            quantumAux = 0;
+            if(p->t_restante > 0){ // se resta tempo
+              fila_p.push(*p);
+           }else{
+              p->t_retorno = tempo_atual - p->t_chegada;
+              aux++;
+              finalizados.push_back(*p);
            }
-          
-          tempo_atual++;
-          //else{
-          //   aux++;
-          // }
-          
-        // }else{
-        //   tempo_atual += fila_p.front().t_restante;
-        //   fila_p.front().t_restante = 0;
-        //     fila_p.front().t_restante = tempo_atual - fila_p.front().t_restante;
-        //     fila_p.front().t_restante = fila_p.front().t_restante - fila_p.front().t_restante;
-        //   aux++;
-        //   fila_p.pop();
-        // }
-      
+          }
         }
-    
+  }  
+
+  for(int i=0; i<processos.size(); i++){ 
+    finalizados[i].t_espera = finalizados[i].t_retorno - finalizados[i].t_pico;
+  }
   
   // // debug 
-
-  // for(int i=0; i<processos.size(); i++){
-  //   cout << "P[" << i+1 << "]:" << "retorno: " << processos[i].t_retorno << " espera: " << processos[i].t_espera << " resposta: " << processos[i].t_resposta << endl; 
-  // }
-  
+  /*
+  for(int i=0; i<processos.size(); i++){
+    cout << "Processo com tempo de pico: " << finalizados[i].t_pico << endl;
+    cout << "P[" << i+1 << "]:" << "retorno: " << finalizados[i].t_retorno << " espera: " << finalizados[i].t_espera << " resposta: " << finalizados[i].t_resposta << endl; 
+   }
+  */
   // IMPRIMINDO RESULTADOS
   float espera_med, retorno_med, resposta_med;
   espera_med = retorno_med = resposta_med = 0;
 
-  for(int i=0; i<processos.size(); i++){
-      espera_med+= processos[i].t_espera;
-      retorno_med+= processos[i].t_retorno;
-      resposta_med+= processos[i].t_resposta;
+  for(int i=0; i<finalizados.size(); i++){
+      espera_med+= finalizados[i].t_espera;
+      retorno_med+= finalizados[i].t_retorno;
+      resposta_med+= finalizados[i].t_resposta;
   }
-
-  cout << "RR " << retorno_med/processos.size() <<" " << resposta_med/processos.size() << " " << espera_med/processos.size() << endl;
+  // SAIDA ESPERADA: 31,5 2,0 20,5
+  cout << "RR " << retorno_med/finalizados.size() <<" " << resposta_med/finalizados.size() << " " << espera_med/finalizados.size() << endl;
   
 }

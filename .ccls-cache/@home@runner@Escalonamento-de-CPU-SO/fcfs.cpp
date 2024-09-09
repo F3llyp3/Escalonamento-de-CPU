@@ -28,7 +28,7 @@ void fcfs(void){
   
 
   // IMPLEMENTAÇÃO DO ALGORITMO FCFS
-  int tempo_atual = 0;
+  int tempo_atual = processos[0].t_chegada;
   for(int i =0; i<processos.size(); i++){
     
     if(i == 0){
@@ -52,7 +52,6 @@ void fcfs(void){
       
       tempo_atual += processos[i].t_pico;
     }
-    
   }
 
   
@@ -69,7 +68,6 @@ void fcfs(void){
   cout << "FCFS " << retorno_med/processos.size() <<" " << resposta_med/processos.size() << " " << espera_med/processos.size() << endl;
   
 }
-
 /*
 cout << "-------------------------" << endl;
 cout << "P[" << i+1 << "]:" << "pico: " << processos[i].t_pico << endl;

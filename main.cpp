@@ -3,9 +3,9 @@
 #include "sjf.h"
 
 int main() { 
-
-  //fcfs();
-  //sjf();
+  //retorno resposta espera
+  fcfs();
+  sjf();
   rr();
   
   return 0;
