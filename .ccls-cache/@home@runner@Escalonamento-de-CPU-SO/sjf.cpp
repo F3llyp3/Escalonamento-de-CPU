@@ -25,7 +25,9 @@ processo& menorProcesso(vector<processo>& VecProcessos, int tempo_atual){
   if (indice_menor != -1) {
       return VecProcessos[indice_menor];  // Retorna o processo com menor tempo de pico
   } else {
-      throw std::runtime_error("Nenhum processo restante encontrado.");  // Lida com o caso onde não há processos com t_restante > 0
+    static processo vazio;
+    vazio.t_restante = 0;
+    return vazio; // Lida com o caso onde não há processos com t_restante > 0
   }
   
 }
@@ -38,6 +40,7 @@ void sjf(void){
   ifstream file( "processos.txt" ); // lendo arquivo
   if(!file){
     cerr <<"Erro ao abrir o arquivo" << endl;
+    return;
   }
 
   while(file >> auxiliar.t_chegada >> auxiliar.t_pico){ 
@@ -47,7 +50,8 @@ void sjf(void){
   file.close();
   
   int tempo_total_exec = 0;
-  
+
+  // calcula tempo_total_exec
   for(int i = 0; i < processos.size(); i++){
     tempo_total_exec += processos[i].t_pico;
     processos[i].t_restante = processos[i].t_pico;
@@ -55,6 +59,38 @@ void sjf(void){
   
   
   int tempo_atual = 0;
+  size_t index = 0;
+
+  while(tempo_atual < tempo_total_exec){
+
+    while (index < processos.size() && processos[index].t_chegada <= tempo_atual) {
+        index++;
+    }
+    
+    processo& processo_atual = menorProcesso(processos,tempo_atual);
+
+    if (processo_atual.t_restante == 0) {
+        // Se o processo retornado é fictício, avance o tempo para o próximo processo
+        if (index < processos.size()) {
+            tempo_atual = processos[index].t_chegada;
+            continue;
+        }
+        break;
+    }
+    processo_atual.t_resposta = tempo_atual - processo_atual.t_chegada;
+    tempo_atual += processo_atual.t_restante;
+    processo_atual.t_restante = 0;
+    processo_atual.t_termino = tempo_atual;
+    //cout << "Processo terminou em: " << processo_atual.t_termino << endl;
+
+    processo_atual.t_retorno = processo_atual.t_termino - processo_atual.t_chegada;
+    //processo_atual.t_espera = processo_atual.t_retorno - processo_atual.t_pico;
+    processo_atual.t_espera = processo_atual.t_termino - processo_atual.t_chegada - processo_atual.t_pico;
+ 
+  }
+  
+  /*
+  # ISSO AQUI ERA COM PREEMPÇÃO TAVA FAZENDO ERRADO
   for( ;tempo_atual < tempo_total_exec; tempo_atual++){
     processo& processo_atual = menorProcesso(processos,tempo_atual);
     
@@ -65,13 +101,16 @@ void sjf(void){
       cout << "Processo terminou em: " << processo_atual.t_termino << endl;
     }
   }
-  /*
-  for(int i=0; i<processos.size(); i++){
-    cout << "Processo " << i+1 << ": " << endl;
-    cout << "\tT chegada: " << processos[i].t_chegada << endl;
-    cout << "\tT pico: " << processos[i].t_pico << endl;
-    cout << "\tT termino: " << processos[i].t_termino << endl;
-  }
   */
+  
+  float espera_med, retorno_med, resposta_med;
+  espera_med = retorno_med = resposta_med = 0;
+
+  for(int i=0; i<processos.size(); i++){
+      espera_med+= processos[i].t_espera;
+      retorno_med+= processos[i].t_retorno;
+      resposta_med+= processos[i].t_resposta;
+  }
+
+  cout << "SJF " << retorno_med/processos.size() <<" " << resposta_med/processos.size() << " " << espera_med/processos.size() << endl;
 }
- //cout << "Tempo restante do processo: " << processo_atual.t_restante << endl;
