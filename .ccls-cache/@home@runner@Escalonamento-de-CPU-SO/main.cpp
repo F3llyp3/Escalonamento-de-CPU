@@ -3,7 +3,7 @@
 #include "sjf.h"
 
 int main() { 
-  //retorno resposta espera
+  
   fcfs();
   sjf();
   rr();
